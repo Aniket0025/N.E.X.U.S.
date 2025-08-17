@@ -1,16 +1,11 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
-import './index.css'
-import { StudentProvider } from './contexts/StudentContext.jsx'
-import { TeacherProvider } from './contexts/TeacherContext.jsx'
-import { Toaster } from 'react-hot-toast'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import App from './App';
+import './global.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-        <TeacherProvider>
-            <StudentProvider>
-                <Toaster/>
-                <App />
-            </StudentProvider>
-        </TeacherProvider>
-)
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+);
