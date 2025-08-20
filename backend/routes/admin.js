@@ -62,6 +62,10 @@ router.post('/classes', adminAuth, async (req, res) => {
     await newClass.save();
     res.status(201).json(newClass);
   } catch (err) {
+    // Handle Mongo duplicate key error explicitly
+    if (err && err.code === 11000) {
+      return res.status(409).json({ message: 'Class already exists' });
+    }
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
