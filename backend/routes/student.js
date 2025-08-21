@@ -6,6 +6,7 @@ import Student from '../models/Student.js';
 import Announcement from '../models/Announcement.js';
 import Subject from '../models/Subject.js';
 import AttendanceSession from '../models/AttendanceSession.js';
+import Meeting from '../models/Meeting.js';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'nexus_secret_key';
@@ -20,6 +21,34 @@ router.post('/login', async (req, res) => {
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials.' });
     const token = jwt.sign({ id: student._id, role: 'student' }, JWT_SECRET, { expiresIn: '7d' });
     res.json({ token, student: { id: student._id, name: student.name, email: student.email } });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// List meetings available to the student
+router.get('/meetings', async (req, res) => {
+  try {
+    const auth = req.headers.authorization;
+    if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ message: 'No token provided' });
+    const token = auth.split(' ')[1];
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    const student = await Student.findById(decoded.id);
+    if (!student) return res.status(404).json({ message: 'Student not found' });
+
+    const query = {
+      $or: [
+        { visibility: 'class', class: student.class },
+        { visibility: 'students', students: student._id }
+      ]
+    };
+    const meetings = await Meeting.find(query).sort({ start: 1 });
+    res.json({ meetings });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }

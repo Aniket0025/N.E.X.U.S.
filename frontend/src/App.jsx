@@ -19,6 +19,9 @@ import TeacherStudents from './pages/TeacherStudents';
 import TeacherAttendance from './pages/TeacherAttendance';
 import StudentDashboard from './pages/StudentDashboard';
 import StudentAttendance from './pages/StudentAttendance';
+import TeacherMeetings from './pages/TeacherMeetings';
+import StudentMeetings from './pages/StudentMeetings';
+import GoogleMeetPage from './pages/GoogleMeetPage';
 
 // Protected Route for Admin
 const RequireAdminAuth = ({ children }) => {
@@ -63,9 +66,12 @@ const App = () => {
       <Route path="/teacher/subjects" element={<RequireTeacherAuth><TeacherSubjects /></RequireTeacherAuth>} />
       <Route path="/teacher/students" element={<RequireTeacherAuth><TeacherStudents /></RequireTeacherAuth>} />
       <Route path="/teacher/attendance" element={<RequireTeacherAuth><TeacherAttendance /></RequireTeacherAuth>} />
+      <Route path="/teacher/meetings" element={<RequireTeacherAuth><TeacherMeetings /></RequireTeacherAuth>} />
+      <Route path="/teacher/google-meet" element={<RequireTeacherAuth><GoogleMeetPage /></RequireTeacherAuth>} />
       <Route path="/student/login" element={<StudentLogin />} />
 <Route path="/student/dashboard" element={<RequireStudentAuth><StudentDashboard /></RequireStudentAuth>} />
 <Route path="/student/attendance" element={<RequireStudentAuth><StudentAttendance /></RequireStudentAuth>} />
+<Route path="/student/meetings" element={<RequireStudentAuth><StudentMeetings /></RequireStudentAuth>} />
       <Route path="/admin/dashboard" element={<RequireAdminAuth><AdminDashboard /></RequireAdminAuth>} />
       <Route path="/admin/classes" element={<RequireAdminAuth><Classes /></RequireAdminAuth>} />
       <Route path="/admin/subjects" element={<RequireAdminAuth><Subjects /></RequireAdminAuth>} />

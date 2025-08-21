@@ -6,6 +6,7 @@ const options = [
   { path: '/student/dashboard', icon: '🏠', label: 'Dashboard' },
   { path: '/student/attendance', icon: '🗓️', label: 'Attendance' },
   { path: '/student/assignments', icon: '📝', label: 'Assignments' },
+  { path: '/student/meetings', icon: '📹', label: 'Online Meetings' },
   { path: '/student/library', icon: '📖', label: 'Digital Library' },
   { path: '/student/announcements', icon: '📢', label: 'Announcements' },
   { path: '/student/profile', icon: '👤', label: 'Profile' },

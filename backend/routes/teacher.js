@@ -7,6 +7,7 @@ import Subject from '../models/Subject.js';
 import Announcement from '../models/Announcement.js';
 import AttendanceSession from '../models/AttendanceSession.js';
 import jwt from 'jsonwebtoken';
+import Meeting from '../models/Meeting.js';
 
 const router = express.Router();
 
@@ -22,6 +23,77 @@ router.get('/dashboard', teacherAuth, async (req, res) => {
     res.json({ studentCount: students.length, announcements });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// Create a meeting (Google Calendar event with Meet link)
+router.post('/meetings', teacherAuth, async (req, res) => {
+  try {
+    const { title, description, start, end, meetLink, visibility, class: classId, students } = req.body;
+    if (!title || !start || !end) return res.status(400).json({ message: 'Title, start, end required' });
+
+    const teacher = await Teacher.findById(req.teacher.id);
+    if (!teacher) return res.status(404).json({ message: 'Teacher not found' });
+
+    // Accept only Jitsi links if provided, else generate one
+    let finalLink = null;
+    if (meetLink && meetLink.trim()) {
+      const isJitsi = /^https?:\/\/(meet\.jit\.si)(\/|$)/.test(meetLink.trim());
+      if (!isJitsi) {
+        return res.status(400).json({ message: 'Only Jitsi links are allowed. Please provide a link starting with https://meet.jit.si/' });
+      }
+      finalLink = meetLink.trim();
+    } else {
+      const room = `Nexus-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      finalLink = `https://meet.jit.si/${room}`;
+    }
+
+    const payload = {
+      title,
+      description,
+      start: new Date(start),
+      end: new Date(end),
+      meetLink: finalLink,
+      createdBy: req.teacher.id,
+      createdFor: teacher.createdBy
+    };
+    if (visibility === 'class' && classId) {
+      payload.visibility = 'class';
+      payload.class = classId;
+    } else if (visibility === 'students' && Array.isArray(students) && students.length) {
+      payload.visibility = 'students';
+      payload.students = students;
+    }
+
+    const meeting = await Meeting.create(payload);
+
+    return res.status(201).json({ meeting });
+  } catch (err) {
+    console.error('Create meeting error:', err);
+    res.status(500).json({ message: 'Failed to create meeting', error: err.message });
+  }
+});
+
+// List meetings created by teacher
+router.get('/meetings', teacherAuth, async (req, res) => {
+  try {
+    const meetings = await Meeting.find({ createdBy: req.teacher.id }).sort({ start: 1 });
+    res.json({ meetings });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch meetings', error: err.message });
+  }
+});
+
+// Cancel (delete) a meeting created by this teacher
+router.delete('/meetings/:id', teacherAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const meeting = await Meeting.findOne({ _id: id, createdBy: req.teacher.id });
+    if (!meeting) return res.status(404).json({ message: 'Meeting not found' });
+    await meeting.deleteOne();
+    return res.json({ message: 'Meeting cancelled' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to cancel meeting', error: err.message });
   }
 });
 

@@ -7,6 +7,7 @@ const options = [
   { path: '/teacher/students', icon: '👥', label: 'Students' },
   { path: '/teacher/subjects', icon: '📚', label: 'Subjects' },
   { path: '/teacher/attendance', icon: '🗓️', label: 'Attendance' },
+  { path: '/teacher/meetings', icon: '📹', label: 'Add Meeting' },
   { path: '/teacher/assignments', icon: '📝', label: 'Assignments' },
   { path: '/teacher/submissions', icon: '📤', label: 'Submissions' },
   { path: '/teacher/library', icon: '📖', label: 'Digital Library' },

@@ -19,6 +19,7 @@
     "express-fileupload": "^1.5.1",
     "express-openid-connect": "^2.18.0",
     "express-session": "^1.18.1",
+    "googleapis": "^137.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.15.0",
     "mongoose": "^8.12.1",
