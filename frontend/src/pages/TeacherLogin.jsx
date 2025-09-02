@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { API_ENDPOINTS } from '../config';
 import LightRays from '../ui/backgrounds/LightRays';
 
 const TeacherLogin = () => {
@@ -14,16 +15,28 @@ const TeacherLogin = () => {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
+  // Set axios defaults
+  useEffect(() => {
+    axios.defaults.withCredentials = true;
+    axios.defaults.headers.common['Content-Type'] = 'application/json';
+  }, []);
+
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
     try {
-      const res = await axios.post('http://localhost:5000/api/admin/teacher/login', form);
+      const res = await axios.post(API_ENDPOINTS.TEACHER.LOGIN, form, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       localStorage.setItem('nexus_teacher_token', res.data.token);
       localStorage.setItem('nexus_teacher', JSON.stringify(res.data.teacher));
       navigate('/teacher/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      console.error('Login error:', err);
     }
   };
 
@@ -40,7 +53,15 @@ const TeacherLogin = () => {
       const decoded = JSON.parse(jsonPayload);
       const googleEmail = decoded.email;
       // Send to backend for teacher check
-      const res = await axios.post('http://localhost:5000/api/teacher/google-login', { email: googleEmail, token: credentialResponse.credential });
+      const res = await axios.post(API_ENDPOINTS.TEACHER.GOOGLE_LOGIN, { 
+        email: googleEmail, 
+        token: credentialResponse.credential 
+      }, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       localStorage.setItem('nexus_teacher_token', res.data.token);
       localStorage.setItem('nexus_teacher', JSON.stringify(res.data.teacher));
       navigate('/teacher/dashboard');

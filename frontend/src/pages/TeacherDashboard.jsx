@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import TeacherSidebar from '../components/TeacherSidebar';
 import axios from 'axios';
+import { teacherTheme, getCardStyle } from '../themes/teacherTheme';
 
 const TeacherDashboard = () => {
   const [teacher, setTeacher] = useState(null);
@@ -30,24 +31,77 @@ const TeacherDashboard = () => {
   return (
     <div style={{ display: 'flex' }}>
       <TeacherSidebar teacherName={teacher?.name || ''} />
-      <main style={{ marginLeft: 240, padding: '2.5rem', flex: 1, background: '#f7f8fa', minHeight: '100vh' }}>
-        <h2 style={{ color: '#222', marginBottom: '2rem' }}>Dashboard</h2>
-        <div style={{ background: '#fff', borderRadius: 8, boxShadow: '0 1px 6px rgba(0,0,0,0.06)', padding: '1.5rem 2.5rem', minWidth: 220, marginBottom: '2rem' }}>
-          <div style={{ fontSize: 28, fontWeight: 700, color: '#0984e3' }}>{counts.students}</div>
-          <div style={{ color: '#636e72', fontWeight: 500 }}>Students in your subjects</div>
+      <main style={teacherTheme.components.mainContent}>
+        <h2 style={{ 
+          color: teacherTheme.colors.textPrimary, 
+          marginBottom: teacherTheme.spacing.xl,
+          fontSize: teacherTheme.typography.fontSize['3xl'],
+          fontWeight: teacherTheme.typography.fontWeight.bold,
+          fontFamily: teacherTheme.typography.fontFamily
+        }}>Dashboard</h2>
+        
+        <div style={getCardStyle({ 
+          minWidth: 220, 
+          marginBottom: teacherTheme.spacing.xl,
+          background: `linear-gradient(135deg, ${teacherTheme.colors.secondary}, ${teacherTheme.colors.secondaryLight})`,
+          color: teacherTheme.colors.textLight
+        })}>
+          <div style={{ 
+            fontSize: teacherTheme.typography.fontSize['4xl'], 
+            fontWeight: teacherTheme.typography.fontWeight.bold 
+          }}>{counts.students}</div>
+          <div style={{ 
+            fontWeight: teacherTheme.typography.fontWeight.medium,
+            fontSize: teacherTheme.typography.fontSize.lg,
+            opacity: 0.9
+          }}>Students in your subjects</div>
         </div>
-        <section>
-          <h3 style={{ color: '#222', marginBottom: '1rem' }}>Announcements from Admin</h3>
+        
+        <section style={getCardStyle()}>
+          <h3 style={{ 
+            color: teacherTheme.colors.textPrimary, 
+            marginBottom: teacherTheme.spacing.lg,
+            fontSize: teacherTheme.typography.fontSize.xl,
+            fontWeight: teacherTheme.typography.fontWeight.semibold,
+            fontFamily: teacherTheme.typography.fontFamily
+          }}>📢 Announcements from Admin</h3>
           {announcements.length === 0 ? (
-            <div style={{ color: '#636e72', textAlign: 'center' }}>No announcements yet.</div>
+            <div style={{ 
+              color: teacherTheme.colors.textSecondary, 
+              textAlign: 'center',
+              padding: teacherTheme.spacing.xl,
+              fontSize: teacherTheme.typography.fontSize.lg
+            }}>No announcements yet.</div>
           ) : (
-            announcements.map(a => (
-              <div key={a._id} style={{ borderBottom: '1px solid #f1f2f6', marginBottom: '1.2rem', paddingBottom: '1.2rem' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: '#222' }}>{a.title}</div>
-                <div style={{ color: '#636e72', margin: '0.5rem 0 0.7rem 0' }}>{a.content}</div>
-                <div style={{ fontSize: '0.85rem', color: '#b2bec3' }}>Posted {new Date(a.createdAt).toLocaleString()}</div>
-              </div>
-            ))
+            <div style={{ display: 'flex', flexDirection: 'column', gap: teacherTheme.spacing.lg }}>
+              {announcements.map(a => (
+                <div key={a._id} style={{ 
+                  borderBottom: `1px solid ${teacherTheme.colors.borderLight}`, 
+                  paddingBottom: teacherTheme.spacing.lg,
+                  background: teacherTheme.colors.surfaceHover,
+                  padding: teacherTheme.spacing.lg,
+                  borderRadius: teacherTheme.borderRadius.md,
+                  border: `1px solid ${teacherTheme.colors.borderLight}`
+                }}>
+                  <div style={{ 
+                    fontWeight: teacherTheme.typography.fontWeight.semibold, 
+                    fontSize: teacherTheme.typography.fontSize.lg, 
+                    color: teacherTheme.colors.textPrimary,
+                    marginBottom: teacherTheme.spacing.sm
+                  }}>{a.title}</div>
+                  <div style={{ 
+                    color: teacherTheme.colors.textSecondary, 
+                    marginBottom: teacherTheme.spacing.sm,
+                    lineHeight: teacherTheme.typography.lineHeight.relaxed
+                  }}>{a.content}</div>
+                  <div style={{ 
+                    fontSize: teacherTheme.typography.fontSize.sm, 
+                    color: teacherTheme.colors.textMuted,
+                    fontWeight: teacherTheme.typography.fontWeight.medium
+                  }}>📅 Posted {new Date(a.createdAt).toLocaleString()}</div>
+                </div>
+              ))}
+            </div>
           )}
         </section>
       </main>

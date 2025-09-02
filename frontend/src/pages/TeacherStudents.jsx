@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import TeacherSidebar from '../components/TeacherSidebar';
 import axios from 'axios';
+import { teacherTheme, getCardStyle } from '../themes/teacherTheme';
 
 const TeacherStudents = () => {
   const [teacher, setTeacher] = useState(null);
@@ -27,30 +28,97 @@ const TeacherStudents = () => {
   return (
     <div style={{ display: 'flex' }}>
       <TeacherSidebar teacherName={teacher?.name || ''} />
-      <main style={{ marginLeft: 240, padding: '2.5rem', flex: 1, background: '#f7f8fa', minHeight: '100vh' }}>
-        <h2 style={{ color: '#222', marginBottom: '2rem' }}>Students in Your Courses</h2>
-        <div style={{ background: '#fff', borderRadius: 8, boxShadow: '0 1px 6px rgba(0,0,0,0.06)', padding: '2rem' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <main style={teacherTheme.components.mainContent}>
+        <h2 style={{ 
+          color: teacherTheme.colors.textPrimary, 
+          marginBottom: teacherTheme.spacing.xl,
+          fontSize: teacherTheme.typography.fontSize['3xl'],
+          fontWeight: teacherTheme.typography.fontWeight.bold,
+          fontFamily: teacherTheme.typography.fontFamily
+        }}>👥 Students in Your Courses</h2>
+        
+        <div style={getCardStyle()}>
+          <table style={teacherTheme.components.table}>
             <thead>
-              <tr style={{ background: '#f1f2f6' }}>
-                <th style={{ padding: '0.7rem', textAlign: 'left' }}>Name</th>
-                <th style={{ padding: '0.7rem', textAlign: 'left' }}>Email</th>
-                <th style={{ padding: '0.7rem', textAlign: 'left' }}>Class</th>
-                <th style={{ padding: '0.7rem', textAlign: 'left' }}>Roll No</th>
-                <th style={{ padding: '0.7rem', textAlign: 'left' }}>Registration No</th>
+              <tr style={{ background: teacherTheme.colors.surfaceHover }}>
+                <th style={{ 
+                  padding: teacherTheme.spacing.md, 
+                  textAlign: 'left',
+                  fontWeight: teacherTheme.typography.fontWeight.semibold,
+                  color: teacherTheme.colors.textPrimary,
+                  borderBottom: `2px solid ${teacherTheme.colors.borderLight}`
+                }}>Name</th>
+                <th style={{ 
+                  padding: teacherTheme.spacing.md, 
+                  textAlign: 'left',
+                  fontWeight: teacherTheme.typography.fontWeight.semibold,
+                  color: teacherTheme.colors.textPrimary,
+                  borderBottom: `2px solid ${teacherTheme.colors.borderLight}`
+                }}>Email</th>
+                <th style={{ 
+                  padding: teacherTheme.spacing.md, 
+                  textAlign: 'left',
+                  fontWeight: teacherTheme.typography.fontWeight.semibold,
+                  color: teacherTheme.colors.textPrimary,
+                  borderBottom: `2px solid ${teacherTheme.colors.borderLight}`
+                }}>Class</th>
+                <th style={{ 
+                  padding: teacherTheme.spacing.md, 
+                  textAlign: 'left',
+                  fontWeight: teacherTheme.typography.fontWeight.semibold,
+                  color: teacherTheme.colors.textPrimary,
+                  borderBottom: `2px solid ${teacherTheme.colors.borderLight}`
+                }}>Roll No</th>
+                <th style={{ 
+                  padding: teacherTheme.spacing.md, 
+                  textAlign: 'left',
+                  fontWeight: teacherTheme.typography.fontWeight.semibold,
+                  color: teacherTheme.colors.textPrimary,
+                  borderBottom: `2px solid ${teacherTheme.colors.borderLight}`
+                }}>Registration No</th>
               </tr>
             </thead>
             <tbody>
               {students.length === 0 ? (
-                <tr><td colSpan={5} style={{ color: '#636e72', textAlign: 'center', padding: '1.5rem' }}>No students enrolled.</td></tr>
+                <tr>
+                  <td colSpan={5} style={{ 
+                    color: teacherTheme.colors.textSecondary, 
+                    textAlign: 'center', 
+                    padding: teacherTheme.spacing.xl,
+                    fontSize: teacherTheme.typography.fontSize.lg
+                  }}>
+                    👥 No students enrolled in your courses yet.
+                  </td>
+                </tr>
               ) : (
                 students.map(s => (
-                  <tr key={s._id}>
-                    <td style={{ padding: '0.7rem' }}>{s.name}</td>
-                    <td style={{ padding: '0.7rem' }}>{s.email}</td>
-                    <td style={{ padding: '0.7rem' }}>{s.class?.name || '-'}</td>
-                    <td style={{ padding: '0.7rem' }}>{s.rollNo}</td>
-                    <td style={{ padding: '0.7rem' }}>{s.registrationNumber}</td>
+                  <tr key={s._id} style={{ 
+                    borderBottom: `1px solid ${teacherTheme.colors.borderLight}`,
+                    transition: 'background-color 0.2s ease'
+                  }}>
+                    <td style={{ 
+                      padding: teacherTheme.spacing.md,
+                      color: teacherTheme.colors.textPrimary,
+                      fontWeight: teacherTheme.typography.fontWeight.medium
+                    }}>{s.name}</td>
+                    <td style={{ 
+                      padding: teacherTheme.spacing.md,
+                      color: teacherTheme.colors.textSecondary
+                    }}>{s.email}</td>
+                    <td style={{ 
+                      padding: teacherTheme.spacing.md,
+                      color: teacherTheme.colors.textSecondary
+                    }}>{s.class?.name || '-'}</td>
+                    <td style={{ 
+                      padding: teacherTheme.spacing.md,
+                      color: teacherTheme.colors.textSecondary,
+                      fontWeight: teacherTheme.typography.fontWeight.medium
+                    }}>{s.rollNo}</td>
+                    <td style={{ 
+                      padding: teacherTheme.spacing.md,
+                      color: teacherTheme.colors.textSecondary,
+                      fontWeight: teacherTheme.typography.fontWeight.medium
+                    }}>{s.registrationNumber}</td>
                   </tr>
                 ))
               )}

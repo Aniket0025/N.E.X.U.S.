@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import nexusLogo from '../assets/nexus-logo.png';
+import { teacherTheme } from '../themes/teacherTheme';
 
 const options = [
   { path: '/teacher/dashboard', icon: '🏠', label: 'Dashboard' },
@@ -15,11 +16,25 @@ const options = [
 ];
 
 const TeacherSidebar = ({ teacherName }) => (
-  <aside style={{ width: 240, background: '#222', color: '#fff', minHeight: '100vh', position: 'fixed', left: 0, top: 0, zIndex: 100 }}>
-    <div style={{ padding: '2rem 0 1rem 0', textAlign: 'center', borderBottom: '1px solid #333' }}>
+  <aside style={teacherTheme.components.sidebar}>
+    <div style={{ 
+      padding: `${teacherTheme.spacing.xl} 0 ${teacherTheme.spacing.lg} 0`, 
+      textAlign: 'center', 
+      borderBottom: `1px solid ${teacherTheme.colors.sidebarBorder}` 
+    }}>
       <img src={nexusLogo} alt="Nexus Logo" style={{ width: 48, marginBottom: 8 }} />
-      <div style={{ fontWeight: 700, fontSize: '1.6rem', letterSpacing: 2, color: '#00b894' }}>NEXUS</div>
-      <div style={{ fontSize: '1rem', marginTop: 4, color: '#00b894' }}>{teacherName}</div>
+      <div style={{ 
+        fontWeight: teacherTheme.typography.fontWeight.bold, 
+        fontSize: teacherTheme.typography.fontSize['2xl'], 
+        letterSpacing: 2, 
+        color: teacherTheme.colors.primary 
+      }}>NEXUS</div>
+      <div style={{ 
+        fontSize: teacherTheme.typography.fontSize.base, 
+        marginTop: 4, 
+        color: teacherTheme.colors.primary,
+        fontWeight: teacherTheme.typography.fontWeight.medium
+      }}>{teacherName}</div>
     </div>
     <nav style={{ width: '100%' }}>
       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
@@ -30,18 +45,19 @@ const TeacherSidebar = ({ teacherName }) => (
               style={({ isActive }) => ({
                 display: 'flex',
                 alignItems: 'center',
-                padding: '1rem 2rem',
-                color: isActive ? '#00b894' : '#fff',
-                background: isActive ? 'rgba(0,184,148,0.1)' : 'transparent',
+                padding: `${teacherTheme.spacing.lg} ${teacherTheme.spacing.xl}`,
+                color: isActive ? teacherTheme.colors.primary : teacherTheme.colors.sidebarText,
+                background: isActive ? teacherTheme.colors.sidebarActive : 'transparent',
                 textDecoration: 'none',
-                fontWeight: 500,
-                fontSize: '1.1rem',
+                fontWeight: teacherTheme.typography.fontWeight.medium,
+                fontSize: teacherTheme.typography.fontSize.lg,
                 gap: 16,
-                borderLeft: isActive ? '4px solid #00b894' : '4px solid transparent',
-                transition: 'all 0.2s'
+                borderLeft: isActive ? `4px solid ${teacherTheme.colors.primary}` : '4px solid transparent',
+                transition: 'all 0.2s ease',
+                fontFamily: teacherTheme.typography.fontFamily
               })}
             >
-              <span>{opt.icon}</span>
+              <span style={{ fontSize: '1.2rem' }}>{opt.icon}</span>
               {opt.label}
             </NavLink>
           </li>

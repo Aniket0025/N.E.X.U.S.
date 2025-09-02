@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import StudentSidebar from '../components/StudentSidebar';
+import { studentTheme, getCardStyle, getButtonStyle, getBadgeStyle } from '../themes/studentTheme';
 
 const API = 'http://localhost:5000';
 
@@ -50,84 +51,186 @@ export default function StudentMeetings() {
   return (
     <div style={{ display: 'flex' }}>
       <StudentSidebar />
-      <main style={{ marginLeft: 220, padding: '2rem', flex: 1, background: '#f7f8fa' }}>
+      <main style={studentTheme.components.mainContent}>
         {toastMsg && (
-          <div style={{ position: 'fixed', top: 16, right: 16, background: '#111827', color: '#fff', padding: '8px 12px', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 50 }}>
+          <div style={{
+            position: 'fixed',
+            top: studentTheme.spacing.lg,
+            right: studentTheme.spacing.lg,
+            background: studentTheme.colors.textPrimary,
+            color: studentTheme.colors.surface,
+            padding: `${studentTheme.spacing.sm} ${studentTheme.spacing.md}`,
+            borderRadius: studentTheme.borderRadius.md,
+            boxShadow: studentTheme.shadows.lg,
+            zIndex: 50,
+            fontSize: studentTheme.typography.fontSize.sm,
+            fontWeight: studentTheme.typography.fontWeight.medium
+          }}>
             {toastMsg}
           </div>
         )}
-        <h2 style={{ marginBottom: 8, color: '#0f172a' }}>Online Meetings</h2>
-        <p style={{ color: '#64748b', marginTop: 0 }}>Upcoming sessions from your teachers (Jitsi).</p>
-        {loading && <div>Loading...</div>}
-        <div style={{ display: 'grid', gap: 16, marginTop: 16, gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
-        {meetings.map(m => {
-          const start = new Date(m.start);
-          const end = new Date(m.end);
-          const isPast = end.getTime() < Date.now();
-          const pillColor = '#14b8a6';
-          return (
-            <div key={m._id} style={{
-              border: '1px solid #e2e8f0',
-              borderRadius: 12,
-              padding: 16,
-              background: '#fff',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.04)'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <div style={{ fontWeight: 700, fontSize: 16 }}>{m.title || 'Untitled meeting'}</div>
-                <span style={{ background: pillColor, color: '#fff', padding: '4px 10px', borderRadius: 999, fontSize: 12 }}>Jitsi</span>
-              </div>
-              <div style={{ color: '#475569', fontSize: 14, marginBottom: 8 }}>{m.description || 'No description'}</div>
-              <div style={{ color: '#0f172a', fontSize: 14, marginBottom: 16 }}>
-                <span style={{ fontWeight: 600 }}>{start.toLocaleString()}</span>
-                <span> — {end.toLocaleString()}</span>
-                {isPast && <span style={{ marginLeft: 8, color: '#ef4444', fontWeight: 600 }}>(Ended)</span>}
-              </div>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                {m.meetLink ? (
-                  <>
-                    <a
-                      href={m.meetLink}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{
-                        background: pillColor,
-                        color: '#fff',
-                        padding: '10px 14px',
-                        borderRadius: 8,
-                        textDecoration: 'none',
-                        fontWeight: 600
-                      }}
-                    >
-                      Join Now
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => handleCopyLink(m._id, m.meetLink)}
-                      style={{
-                        background: copiedId === m._id ? '#dcfce7' : '#e2e8f0',
-                        color: copiedId === m._id ? '#166534' : '#0f172a',
-                        padding: '10px 14px',
-                        borderRadius: 8,
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontWeight: 600
-                      }}
-                    >
-                      {copiedId === m._id ? '✓ Copied' : 'Copy Link'}
-                    </button>
-                  </>
-                ) : (
-                  <span style={{ color: '#64748b' }}>Meet link not available yet</span>
-                )}
-              </div>
-            </div>
-          );
-        })}
-        {!meetings.length && !loading && (
-          <div style={{ color: '#64748b' }}>No meetings available.</div>
+        
+        <div style={{ marginBottom: studentTheme.spacing.xl }}>
+          <h2 style={{
+            marginBottom: studentTheme.spacing.sm,
+            color: studentTheme.colors.textPrimary,
+            fontSize: studentTheme.typography.fontSize['3xl'],
+            fontWeight: studentTheme.typography.fontWeight.bold,
+            fontFamily: studentTheme.typography.fontFamily
+          }}>🎥 Online Meetings</h2>
+          <p style={{
+            color: studentTheme.colors.textSecondary,
+            marginTop: 0,
+            fontSize: studentTheme.typography.fontSize.base
+          }}>Join upcoming virtual sessions from your teachers via Jitsi Meet.</p>
+        </div>
+
+        {loading && (
+          <div style={getCardStyle({
+            textAlign: 'center',
+            color: studentTheme.colors.textSecondary,
+            fontSize: studentTheme.typography.fontSize.lg,
+            padding: studentTheme.spacing.xl
+          })}>
+            ⏳ Loading meetings...
+          </div>
         )}
-      </div>
+
+        <div style={{
+          display: 'grid',
+          gap: studentTheme.spacing.lg,
+          marginTop: studentTheme.spacing.lg,
+          gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))'
+        }}>
+          {meetings.map(m => {
+            const start = new Date(m.start);
+            const end = new Date(m.end);
+            const isPast = end.getTime() < Date.now();
+            
+            return (
+              <div key={m._id} style={getCardStyle({
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+              })}>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  marginBottom: studentTheme.spacing.md
+                }}>
+                  <div style={{
+                    fontWeight: studentTheme.typography.fontWeight.bold,
+                    fontSize: studentTheme.typography.fontSize.lg,
+                    color: studentTheme.colors.textPrimary,
+                    flex: 1,
+                    marginRight: studentTheme.spacing.sm
+                  }}>
+                    {m.title || 'Untitled Meeting'}
+                  </div>
+                  <span style={getBadgeStyle('primary')}>
+                    🎥 Jitsi
+                  </span>
+                </div>
+
+                <div style={{
+                  color: studentTheme.colors.textSecondary,
+                  fontSize: studentTheme.typography.fontSize.sm,
+                  marginBottom: studentTheme.spacing.md,
+                  lineHeight: 1.5
+                }}>
+                  {m.description || 'No description provided'}
+                </div>
+
+                <div style={{
+                  color: studentTheme.colors.textPrimary,
+                  fontSize: studentTheme.typography.fontSize.sm,
+                  marginBottom: studentTheme.spacing.lg,
+                  padding: studentTheme.spacing.sm,
+                  background: studentTheme.colors.surfaceHover,
+                  borderRadius: studentTheme.borderRadius.sm,
+                  borderLeft: `4px solid ${studentTheme.colors.primary}`
+                }}>
+                  <div style={{ fontWeight: studentTheme.typography.fontWeight.semibold }}>
+                    📅 {start.toLocaleDateString()} at {start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                  <div style={{ color: studentTheme.colors.textSecondary, fontSize: studentTheme.typography.fontSize.xs }}>
+                    Duration: {start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                  {isPast && (
+                    <div style={{
+                      marginTop: studentTheme.spacing.xs,
+                      color: studentTheme.colors.error,
+                      fontWeight: studentTheme.typography.fontWeight.semibold,
+                      fontSize: studentTheme.typography.fontSize.xs
+                    }}>
+                      ⏰ Meeting has ended
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', gap: studentTheme.spacing.sm, alignItems: 'center' }}>
+                  {m.meetLink ? (
+                    <>
+                      <a
+                        href={m.meetLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          ...getButtonStyle('primary'),
+                          textDecoration: 'none',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: studentTheme.spacing.xs
+                        }}
+                      >
+                        🚀 Join Meeting
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyLink(m._id, m.meetLink)}
+                        style={getButtonStyle(copiedId === m._id ? 'success' : 'secondary', {
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: studentTheme.spacing.xs
+                        })}
+                      >
+                        {copiedId === m._id ? '✅ Copied!' : '📋 Copy Link'}
+                      </button>
+                    </>
+                  ) : (
+                    <div style={{
+                      color: studentTheme.colors.textSecondary,
+                      fontSize: studentTheme.typography.fontSize.sm,
+                      fontStyle: 'italic',
+                      padding: studentTheme.spacing.sm,
+                      background: studentTheme.colors.surfaceHover,
+                      borderRadius: studentTheme.borderRadius.sm
+                    }}>
+                      🔗 Meeting link not available yet
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {!meetings.length && !loading && (
+          <div style={getCardStyle({
+            textAlign: 'center',
+            color: studentTheme.colors.textSecondary,
+            fontSize: studentTheme.typography.fontSize.lg,
+            padding: studentTheme.spacing.xl
+          })}>
+            📅 No meetings scheduled at the moment.
+            <div style={{
+              fontSize: studentTheme.typography.fontSize.sm,
+              marginTop: studentTheme.spacing.sm,
+              color: studentTheme.colors.textSecondary
+            }}>
+              Check back later for upcoming virtual sessions from your teachers.
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import TeacherSidebar from '../components/TeacherSidebar';
 import axios from 'axios';
+import { teacherTheme, getCardStyle, getButtonStyle, getModalStyle, getBadgeStyle } from '../themes/teacherTheme';
 
 const TeacherSubjects = () => {
   const [teacher, setTeacher] = useState(null);
@@ -163,28 +164,65 @@ const TeacherSubjects = () => {
   return (
     <div style={{ display: 'flex' }}>
       <TeacherSidebar teacherName={teacher?.name || ''} />
-      <main style={{ marginLeft: 240, padding: '2.5rem', flex: 1, background: '#f7f8fa', minHeight: '100vh' }}>
-        <h2 style={{ color: '#222', marginBottom: '2rem' }}>Subjects & Classes</h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem' }}>
+      <main style={teacherTheme.components.mainContent}>
+        <h2 style={{ 
+          color: teacherTheme.colors.textPrimary, 
+          marginBottom: teacherTheme.spacing.xl,
+          fontSize: teacherTheme.typography.fontSize['3xl'],
+          fontWeight: teacherTheme.typography.fontWeight.bold,
+          fontFamily: teacherTheme.typography.fontFamily
+        }}>📚 Subjects & Classes</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: teacherTheme.spacing.xl }}>
           {subjects.length === 0 ? (
-            <div style={{ color: '#636e72', textAlign: 'center' }}>No subjects assigned.</div>
+            <div style={getCardStyle({ 
+              color: teacherTheme.colors.textSecondary, 
+              textAlign: 'center',
+              padding: teacherTheme.spacing['2xl'],
+              fontSize: teacherTheme.typography.fontSize.lg
+            })}>📚 No subjects assigned yet.</div>
           ) : (
             subjects.map((s, idx) => (
               <div
                 key={s._id || idx}
-                style={{ background: '#fff', padding: '1.5rem 2rem', borderRadius: 8, boxShadow: '0 1px 6px rgba(0,0,0,0.06)', minWidth: 200, fontWeight: 'bold', color: '#222', position: 'relative', marginBottom: 8 }}
+                style={getCardStyle({
+                  minWidth: 280,
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                  cursor: 'pointer'
+                })}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = teacherTheme.shadows.lg;
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = teacherTheme.shadows.md;
+                }}
               >
-                <div style={{ fontSize: 18 }}>{s.assignedClass?.name || '-'}</div>
-                <div style={{ fontSize: 15, color: '#636e72', marginTop: 8 }}>{s.name}</div>
-                <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+                <div style={{ 
+                  fontSize: teacherTheme.typography.fontSize.xl,
+                  fontWeight: teacherTheme.typography.fontWeight.bold,
+                  color: teacherTheme.colors.textPrimary,
+                  marginBottom: teacherTheme.spacing.sm
+                }}>🎓 {s.assignedClass?.name || 'No Class'}</div>
+                <div style={{ 
+                  fontSize: teacherTheme.typography.fontSize.lg, 
+                  color: teacherTheme.colors.textSecondary, 
+                  marginBottom: teacherTheme.spacing.lg,
+                  fontWeight: teacherTheme.typography.fontWeight.medium
+                }}>{s.name}</div>
+                <div style={{ display: 'flex', gap: teacherTheme.spacing.sm }}>
                   <button
-                    style={{ padding: '0.5rem 1.2rem', background: '#00b894', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 500 }}
+                    style={getButtonStyle('primary', { flex: 1 })}
                     onClick={() => handleOpenModal(s)}
-                  >Students</button>
+                    onMouseEnter={(e) => e.target.style.background = teacherTheme.colors.primaryLight}
+                    onMouseLeave={(e) => e.target.style.background = teacherTheme.colors.primary}
+                  >👥 Students</button>
                   <button
-                    style={{ padding: '0.5rem 1.2rem', background: '#0984e3', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 500 }}
+                    style={getButtonStyle('secondary', { flex: 1 })}
                     onClick={() => handleOpenSessionsModal(s)}
-                  >Sessions</button>
+                    onMouseEnter={(e) => e.target.style.background = teacherTheme.colors.secondaryLight}
+                    onMouseLeave={(e) => e.target.style.background = teacherTheme.colors.secondary}
+                  >📊 Sessions</button>
                 </div>
               </div>
             ))
@@ -192,36 +230,109 @@ const TeacherSubjects = () => {
         </div>
       {/* Modal for students in subject/class */}
       {modalOpen && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(30, 39, 46, 0.4)', zIndex: 2000,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <div style={{ background: '#fff', borderRadius: 10, padding: '2.5rem', minWidth: 420, maxWidth: '90vw', boxShadow: '0 2px 16px rgba(0,0,0,0.18)', position: 'relative' }}>
-            <button onClick={handleCloseModal} style={{ position: 'absolute', top: 18, right: 24, background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: '#636e72' }}>&times;</button>
-            <h3 style={{ marginBottom: 18, color: '#222' }}>Students in {modalSubject?.name} ({modalSubject?.assignedClass?.name})</h3>
+        <div style={getModalStyle().overlay}>
+          <div style={getModalStyle().content}>
+            <button onClick={handleCloseModal} style={{ 
+              position: 'absolute', 
+              top: teacherTheme.spacing.lg, 
+              right: teacherTheme.spacing.lg, 
+              background: 'none', 
+              border: 'none', 
+              fontSize: teacherTheme.typography.fontSize['2xl'], 
+              cursor: 'pointer', 
+              color: teacherTheme.colors.textSecondary,
+              transition: 'color 0.2s ease'
+            }}>&times;</button>
+            <h3 style={{ 
+              marginBottom: teacherTheme.spacing.lg, 
+              color: teacherTheme.colors.textPrimary,
+              fontSize: teacherTheme.typography.fontSize.xl,
+              fontWeight: teacherTheme.typography.fontWeight.semibold
+            }}>👥 Students in {modalSubject?.name} ({modalSubject?.assignedClass?.name})</h3>
             {modalLoading ? (
-              <div style={{ color: '#636e72', textAlign: 'center', padding: '2rem' }}>Loading...</div>
+              <div style={{ 
+                color: teacherTheme.colors.textSecondary, 
+                textAlign: 'center', 
+                padding: teacherTheme.spacing.xl,
+                fontSize: teacherTheme.typography.fontSize.lg
+              }}>⏳ Loading students...</div>
             ) : modalStudents.length === 0 ? (
-              <div style={{ color: '#636e72', textAlign: 'center', padding: '2rem' }}>No students enrolled.</div>
+              <div style={{ 
+                color: teacherTheme.colors.textSecondary, 
+                textAlign: 'center', 
+                padding: teacherTheme.spacing.xl,
+                fontSize: teacherTheme.typography.fontSize.lg
+              }}>👥 No students enrolled yet.</div>
             ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <table style={teacherTheme.components.table}>
                 <thead>
-                  <tr style={{ background: '#f1f2f6' }}>
-                    <th style={{ padding: '0.7rem', textAlign: 'left' }}>Name</th>
-                    <th style={{ padding: '0.7rem', textAlign: 'left' }}>Email</th>
-                    <th style={{ padding: '0.7rem', textAlign: 'left' }}>Class</th>
-                    <th style={{ padding: '0.7rem', textAlign: 'left' }}>Roll No</th>
-                    <th style={{ padding: '0.7rem', textAlign: 'left' }}>Registration No</th>
+                  <tr style={{ background: teacherTheme.colors.surfaceHover }}>
+                    <th style={{ 
+                      padding: teacherTheme.spacing.md, 
+                      textAlign: 'left',
+                      fontWeight: teacherTheme.typography.fontWeight.semibold,
+                      color: teacherTheme.colors.textPrimary,
+                      borderBottom: `2px solid ${teacherTheme.colors.borderLight}`
+                    }}>Name</th>
+                    <th style={{ 
+                      padding: teacherTheme.spacing.md, 
+                      textAlign: 'left',
+                      fontWeight: teacherTheme.typography.fontWeight.semibold,
+                      color: teacherTheme.colors.textPrimary,
+                      borderBottom: `2px solid ${teacherTheme.colors.borderLight}`
+                    }}>Email</th>
+                    <th style={{ 
+                      padding: teacherTheme.spacing.md, 
+                      textAlign: 'left',
+                      fontWeight: teacherTheme.typography.fontWeight.semibold,
+                      color: teacherTheme.colors.textPrimary,
+                      borderBottom: `2px solid ${teacherTheme.colors.borderLight}`
+                    }}>Class</th>
+                    <th style={{ 
+                      padding: teacherTheme.spacing.md, 
+                      textAlign: 'left',
+                      fontWeight: teacherTheme.typography.fontWeight.semibold,
+                      color: teacherTheme.colors.textPrimary,
+                      borderBottom: `2px solid ${teacherTheme.colors.borderLight}`
+                    }}>Roll No</th>
+                    <th style={{ 
+                      padding: teacherTheme.spacing.md, 
+                      textAlign: 'left',
+                      fontWeight: teacherTheme.typography.fontWeight.semibold,
+                      color: teacherTheme.colors.textPrimary,
+                      borderBottom: `2px solid ${teacherTheme.colors.borderLight}`
+                    }}>Registration No</th>
                   </tr>
                 </thead>
                 <tbody>
                   {modalStudents.map(s => (
-                    <tr key={s._id}>
-                      <td style={{ padding: '0.7rem' }}>{s.name}</td>
-                      <td style={{ padding: '0.7rem' }}>{s.email}</td>
-                      <td style={{ padding: '0.7rem' }}>{s.class?.name || '-'}</td>
-                      <td style={{ padding: '0.7rem' }}>{s.rollNo}</td>
-                      <td style={{ padding: '0.7rem' }}>{s.registrationNumber}</td>
+                    <tr key={s._id} style={{ 
+                      borderBottom: `1px solid ${teacherTheme.colors.borderLight}`,
+                      transition: 'background-color 0.2s ease'
+                    }}>
+                      <td style={{ 
+                        padding: teacherTheme.spacing.md,
+                        color: teacherTheme.colors.textPrimary,
+                        fontWeight: teacherTheme.typography.fontWeight.medium
+                      }}>{s.name}</td>
+                      <td style={{ 
+                        padding: teacherTheme.spacing.md,
+                        color: teacherTheme.colors.textSecondary
+                      }}>{s.email}</td>
+                      <td style={{ 
+                        padding: teacherTheme.spacing.md,
+                        color: teacherTheme.colors.textSecondary
+                      }}>{s.class?.name || '-'}</td>
+                      <td style={{ 
+                        padding: teacherTheme.spacing.md,
+                        color: teacherTheme.colors.textSecondary,
+                        fontWeight: teacherTheme.typography.fontWeight.medium
+                      }}>{s.rollNo}</td>
+                      <td style={{ 
+                        padding: teacherTheme.spacing.md,
+                        color: teacherTheme.colors.textSecondary,
+                        fontWeight: teacherTheme.typography.fontWeight.medium
+                      }}>{s.registrationNumber}</td>
                     </tr>
                   ))}
                 </tbody>

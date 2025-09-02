@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TeacherSidebar from '../components/TeacherSidebar';
+import { teacherTheme, getCardStyle, getButtonStyle, getInputStyle } from '../themes/teacherTheme';
 
 const API = 'http://localhost:5000';
 
@@ -127,71 +128,218 @@ export default function TeacherMeetings() {
   return (
     <div style={{ display: 'flex' }}>
       <TeacherSidebar />
-      <main style={{ marginLeft: 240, padding: '2rem', flex: 1, background: '#f7f8fa' }}>
+      <main style={teacherTheme.components.mainContent}>
         {toastMsg && (
-          <div style={{ position: 'fixed', top: 16, right: 16, background: '#111827', color: '#fff', padding: '8px 12px', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 50 }}>
-            {toastMsg}
+          <div style={{ 
+            position: 'fixed', 
+            top: teacherTheme.spacing.lg, 
+            right: teacherTheme.spacing.lg, 
+            background: teacherTheme.colors.success, 
+            color: teacherTheme.colors.textLight, 
+            padding: `${teacherTheme.spacing.sm} ${teacherTheme.spacing.md}`, 
+            borderRadius: teacherTheme.borderRadius.lg, 
+            boxShadow: teacherTheme.shadows.lg, 
+            zIndex: 50,
+            fontWeight: teacherTheme.typography.fontWeight.medium
+          }}>
+            ✅ {toastMsg}
           </div>
         )}
-        <h2 style={{ marginBottom: 8, color: '#0f172a' }}>Jitsi Meetings</h2>
-        <p style={{ color: '#64748b', marginTop: 0 }}>Create a meeting for your class. A Jitsi link will be generated automatically.</p>
-        {loading && <div>Loading...</div>}
+        <h2 style={{ 
+          marginBottom: teacherTheme.spacing.sm, 
+          color: teacherTheme.colors.textPrimary,
+          fontSize: teacherTheme.typography.fontSize['3xl'],
+          fontWeight: teacherTheme.typography.fontWeight.bold,
+          fontFamily: teacherTheme.typography.fontFamily
+        }}>📹 Jitsi Meetings</h2>
+        <p style={{ 
+          color: teacherTheme.colors.textSecondary, 
+          marginTop: 0,
+          marginBottom: teacherTheme.spacing.xl,
+          fontSize: teacherTheme.typography.fontSize.lg
+        }}>Create a meeting for your class. A Jitsi link will be generated automatically.</p>
+        {loading && (
+          <div style={{
+            color: teacherTheme.colors.textSecondary,
+            fontSize: teacherTheme.typography.fontSize.lg,
+            textAlign: 'center',
+            padding: teacherTheme.spacing.lg
+          }}>⏳ Loading...</div>
+        )}
 
-      <form onSubmit={handleCreateMeeting} style={{ display: 'grid', gap: 12, maxWidth: 620, marginBottom: 24, padding: 18, background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
-        <input placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} required style={{ padding: '10px 12px', border: '1px solid #e2e8f0', borderRadius: 8 }} />
-        <textarea placeholder="Description (optional)" value={description} onChange={e => setDescription(e.target.value)} style={{ padding: '10px 12px', border: '1px solid #e2e8f0', borderRadius: 8 }} />
-        <label>Class</label>
-        <select value={selectedClass} onChange={e => setSelectedClass(e.target.value)} required style={{ padding: '10px 12px', border: '1px solid #e2e8f0', borderRadius: 8 }}>
-          <option value="" disabled>Select a class</option>
+      <form onSubmit={handleCreateMeeting} style={getCardStyle({ 
+        display: 'grid', 
+        gap: teacherTheme.spacing.lg, 
+        maxWidth: 620, 
+        marginBottom: teacherTheme.spacing.xl 
+      })}>
+        <h3 style={{
+          color: teacherTheme.colors.textPrimary,
+          fontSize: teacherTheme.typography.fontSize.xl,
+          fontWeight: teacherTheme.typography.fontWeight.semibold,
+          marginBottom: teacherTheme.spacing.sm
+        }}>🆕 Create New Meeting</h3>
+        
+        <input 
+          placeholder="Meeting Title" 
+          value={title} 
+          onChange={e => setTitle(e.target.value)} 
+          required 
+          style={getInputStyle()} 
+        />
+        
+        <textarea 
+          placeholder="Description (optional)" 
+          value={description} 
+          onChange={e => setDescription(e.target.value)} 
+          style={getInputStyle({ minHeight: '80px', resize: 'vertical' })} 
+        />
+        
+        <label style={{
+          color: teacherTheme.colors.textPrimary,
+          fontWeight: teacherTheme.typography.fontWeight.medium,
+          fontSize: teacherTheme.typography.fontSize.base
+        }}>🎓 Select Class</label>
+        <select 
+          value={selectedClass} 
+          onChange={e => setSelectedClass(e.target.value)} 
+          required 
+          style={getInputStyle()}
+        >
+          <option value="" disabled>Choose a class</option>
           {classes.map(c => (
             <option key={c._id} value={c._id}>{c.name}</option>
           ))}
         </select>
-        <label>Start</label>
-        <input type="datetime-local" value={start} onChange={e => setStart(e.target.value)} required style={{ padding: '10px 12px', border: '1px solid #e2e8f0', borderRadius: 8 }} />
-        <label>End</label>
-        <input type="datetime-local" value={end} onChange={e => setEnd(e.target.value)} required style={{ padding: '10px 12px', border: '1px solid #e2e8f0', borderRadius: 8 }} />
+        
+        <label style={{
+          color: teacherTheme.colors.textPrimary,
+          fontWeight: teacherTheme.typography.fontWeight.medium,
+          fontSize: teacherTheme.typography.fontSize.base
+        }}>⏰ Start Time</label>
+        <input 
+          type="datetime-local" 
+          value={start} 
+          onChange={e => setStart(e.target.value)} 
+          required 
+          style={getInputStyle()} 
+        />
+        
+        <label style={{
+          color: teacherTheme.colors.textPrimary,
+          fontWeight: teacherTheme.typography.fontWeight.medium,
+          fontSize: teacherTheme.typography.fontSize.base
+        }}>⏰ End Time</label>
+        <input 
+          type="datetime-local" 
+          value={end} 
+          onChange={e => setEnd(e.target.value)} 
+          required 
+          style={getInputStyle()} 
+        />
+        
         {error && (
-          <div style={{ background: '#fee2e2', color: '#991b1b', padding: '8px 10px', borderRadius: 6 }}>
-            {error}
+          <div style={{ 
+            background: '#fee2e2', 
+            color: '#991b1b', 
+            padding: teacherTheme.spacing.md, 
+            borderRadius: teacherTheme.borderRadius.md,
+            border: '1px solid #fecaca',
+            fontWeight: teacherTheme.typography.fontWeight.medium
+          }}>
+            ⚠️ {error}
           </div>
         )}
-        {/* Simplified: no visibility/class/students inputs */}
-        <button type="submit" style={{ padding: '10px 16px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.06)' }}>Create Meeting</button>
+        
+        <button 
+          type="submit" 
+          style={getButtonStyle('primary', { 
+            fontSize: teacherTheme.typography.fontSize.lg,
+            padding: `${teacherTheme.spacing.lg} ${teacherTheme.spacing.xl}`
+          })}
+          disabled={loading}
+        >
+          {loading ? '⏳ Creating...' : '🚀 Create Meeting'}
+        </button>
       </form>
 
-      <h3>Upcoming Meetings</h3>
-      <div style={{ display: 'grid', gap: 12 }}>
+      <h3 style={{
+        color: teacherTheme.colors.textPrimary,
+        fontSize: teacherTheme.typography.fontSize.xl,
+        fontWeight: teacherTheme.typography.fontWeight.semibold,
+        marginBottom: teacherTheme.spacing.lg
+      }}>📅 Upcoming Meetings</h3>
+      
+      <div style={{ display: 'grid', gap: teacherTheme.spacing.lg }}>
         {meetings.map(m => (
-          <div key={m._id} style={{ border: '1px solid #e2e8f0', borderRadius: 12, padding: 16, background: '#ffffff', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontWeight: 700, fontSize: 16 }}>{m.title}</div>
-              <span style={{ background: '#14b8a6', color: '#fff', padding: '2px 8px', borderRadius: 999, fontSize: 12 }}>Jitsi</span>
+          <div key={m._id} style={getCardStyle({ 
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease' 
+          })}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: teacherTheme.spacing.sm }}>
+              <div style={{ 
+                fontWeight: teacherTheme.typography.fontWeight.bold, 
+                fontSize: teacherTheme.typography.fontSize.lg,
+                color: teacherTheme.colors.textPrimary
+              }}>{m.title}</div>
+              <span style={{ 
+                background: teacherTheme.colors.primary, 
+                color: teacherTheme.colors.textLight, 
+                padding: `${teacherTheme.spacing.xs} ${teacherTheme.spacing.sm}`, 
+                borderRadius: teacherTheme.borderRadius.full, 
+                fontSize: teacherTheme.typography.fontSize.xs,
+                fontWeight: teacherTheme.typography.fontWeight.semibold
+              }}>📹 Jitsi</span>
             </div>
-            <div style={{ color: '#64748b', marginTop: 6 }}>{new Date(m.start).toLocaleString()} - {new Date(m.end).toLocaleString()}</div>
+            
+            <div style={{ 
+              color: teacherTheme.colors.textSecondary, 
+              marginBottom: teacherTheme.spacing.md,
+              fontSize: teacherTheme.typography.fontSize.base
+            }}>
+              🕐 {new Date(m.start).toLocaleString()} - {new Date(m.end).toLocaleString()}
+            </div>
+            
             {m.meetLink && (
-              <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
-                <a href={m.meetLink} target="_blank" rel="noreferrer" style={{ padding: '8px 12px', background: '#14b8a6', color: '#fff', borderRadius: 6, textDecoration: 'none' }}>Join</a>
+              <div style={{ display: 'flex', gap: teacherTheme.spacing.sm, flexWrap: 'wrap' }}>
+                <a 
+                  href={m.meetLink} 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  style={getButtonStyle('primary', { textDecoration: 'none' })}
+                >
+                  🚀 Join Meeting
+                </a>
                 <button
                   type="button"
                   onClick={() => handleCopyLink(m._id, m.meetLink)}
-                  style={{
-                    padding: '8px 12px',
-                    background: copiedId === m._id ? '#dcfce7' : '#f3f4f6',
-                    color: copiedId === m._id ? '#166534' : '#111827',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: 6,
-                    cursor: 'pointer'
-                  }}
+                  style={getButtonStyle('secondary', {
+                    background: copiedId === m._id ? teacherTheme.colors.success : teacherTheme.colors.secondary,
+                    color: teacherTheme.colors.textLight
+                  })}
                 >
-                  {copiedId === m._id ? '✓ Copied' : 'Copy Link'}
+                  {copiedId === m._id ? '✅ Copied' : '📋 Copy Link'}
                 </button>
-                <button type="button" onClick={() => handleCancelMeeting(m._id)} style={{ padding: '8px 12px', background: '#fee2e2', color: '#991b1b', border: '1px solid #fecaca', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
+                <button 
+                  type="button" 
+                  onClick={() => handleCancelMeeting(m._id)} 
+                  style={getButtonStyle('danger')}
+                >
+                  🗑️ Cancel
+                </button>
               </div>
             )}
           </div>
         ))}
-        {!meetings.length && <div>No meetings yet.</div>}
+        {!meetings.length && (
+          <div style={getCardStyle({
+            textAlign: 'center',
+            color: teacherTheme.colors.textSecondary,
+            fontSize: teacherTheme.typography.fontSize.lg,
+            padding: teacherTheme.spacing['2xl']
+          })}>
+            📅 No meetings scheduled yet. Create your first meeting above!
+          </div>
+        )}
       </div>
       </main>
     </div>

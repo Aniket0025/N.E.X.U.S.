@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import StudentSidebar from '../components/StudentSidebar';
 import axios from 'axios';
+import { studentTheme, getCardStyle, getButtonStyle, getBadgeStyle } from '../themes/studentTheme';
 
 const StudentAttendance = () => {
   const [student, setStudent] = useState(null);
@@ -48,56 +49,190 @@ const StudentAttendance = () => {
   return (
     <div style={{ display: 'flex' }}>
       <StudentSidebar studentName={student?.name || ''} />
-      <main style={{ marginLeft: 220, padding: '2.5rem', flex: 1, background: '#f7f8fa', minHeight: '100vh' }}>
-        <h2 style={{ color: '#222', marginBottom: '2rem' }}>Attendance</h2>
+      <main style={studentTheme.components.mainContent}>
+        <h2 style={{ 
+          color: studentTheme.colors.textPrimary, 
+          marginBottom: studentTheme.spacing.xl,
+          fontSize: studentTheme.typography.fontSize['3xl'],
+          fontWeight: studentTheme.typography.fontWeight.bold,
+          fontFamily: studentTheme.typography.fontFamily
+        }}>📊 Attendance Records</h2>
+        
         {!selectedSubject ? (
           <div>
-            <h3 style={{ marginBottom: 18 }}>Subjects Enrolled</h3>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
+            <h3 style={{ 
+              marginBottom: studentTheme.spacing.lg,
+              color: studentTheme.colors.textPrimary,
+              fontSize: studentTheme.typography.fontSize.xl,
+              fontWeight: studentTheme.typography.fontWeight.semibold
+            }}>📚 Your Enrolled Subjects</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: studentTheme.spacing.xl }}>
               {subjects.map(sub => (
-                <div key={sub._id} style={{ background: '#fff', borderRadius: 8, boxShadow: '0 1px 6px rgba(0,0,0,0.07)', padding: '1.2rem 2rem', minWidth: 220, cursor: 'pointer', fontWeight: 500 }} onClick={() => handleSubjectClick(sub)}>
-                  <div style={{ fontSize: 18, color: '#0984e3', marginBottom: 6 }}>{sub.name}</div>
-                  <div style={{ color: '#636e72', fontSize: 15 }}>Avg Attendance: {typeof sub.averageAttendance === 'number' ? `${sub.averageAttendance}%` : '-'}</div>
+                <div 
+                  key={sub._id} 
+                  style={getCardStyle({ 
+                    cursor: 'pointer', 
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                    minWidth: 220
+                  })} 
+                  onClick={() => handleSubjectClick(sub)}
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = studentTheme.shadows.lg;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = studentTheme.shadows.md;
+                  }}
+                >
+                  <div style={{ 
+                    fontSize: studentTheme.typography.fontSize.lg, 
+                    color: studentTheme.colors.primary, 
+                    marginBottom: studentTheme.spacing.sm,
+                    fontWeight: studentTheme.typography.fontWeight.semibold
+                  }}>{sub.name}</div>
+                  <div style={{ 
+                    color: studentTheme.colors.textSecondary, 
+                    fontSize: studentTheme.typography.fontSize.base,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: studentTheme.spacing.sm
+                  }}>
+                    📈 Avg Attendance: 
+                    <span style={getBadgeStyle(
+                      typeof sub.averageAttendance === 'number' && sub.averageAttendance >= 75 ? 'present' : 'absent'
+                    )}>
+                      {typeof sub.averageAttendance === 'number' ? `${sub.averageAttendance}%` : 'N/A'}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         ) : (
           <div>
-            <button onClick={() => setSelectedSubject(null)} style={{ marginBottom: 18, background: 'none', color: '#0984e3', border: 'none', cursor: 'pointer', fontWeight: 500, fontSize: 16 }}>← Back to Subjects</button>
-            <h3 style={{ color: '#222', marginBottom: 10 }}>{selectedSubject.name}</h3>
-            {teacher && <div style={{ color: '#636e72', marginBottom: 12 }}>Teacher: <b>{teacher.name}</b></div>}
-            {loading ? <div>Loading sessions...</div> : (
-              <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 12 }}>
-                <thead>
-                  <tr style={{ background: '#f1f2f6', textAlign: 'left' }}>
-                    <th style={{ padding: '0.7rem', borderBottom: '1px solid #dfe6e9' }}>Date</th>
-                    <th style={{ padding: '0.7rem', borderBottom: '1px solid #dfe6e9' }}>Time</th>
-                    <th style={{ padding: '0.7rem', borderBottom: '1px solid #dfe6e9' }}>Topic</th>
-                    <th style={{ padding: '0.7rem', borderBottom: '1px solid #dfe6e9' }}>Attendance</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sessions.length === 0 ? (
-                    <tr><td colSpan={4} style={{ padding: '1.2rem', textAlign: 'center', color: '#636e72' }}>No sessions found.</td></tr>
-                  ) : (
-                    sessions.map(sess => (
-                      <tr key={sess._id}>
-                        <td style={{ padding: '0.7rem' }}>{new Date(sess.date).toLocaleDateString()}</td>
-                        <td style={{ padding: '0.7rem' }}>{sess.startTime} - {sess.endTime}</td>
-                        <td style={{ padding: '0.7rem' }}>{sess.topic}</td>
-                        <td style={{ padding: '0.7rem' }}>
-                          {sess.attendance && sess.attendance.present ? (
-                            <span style={{ color: '#00b894', fontWeight: 600 }}>Present</span>
-                          ) : (
-                            <span style={{ color: '#d63031', fontWeight: 600 }}>Absent</span>
-                          )}
+            <button 
+              onClick={() => setSelectedSubject(null)} 
+              style={getButtonStyle('secondary', { 
+                marginBottom: studentTheme.spacing.lg,
+                padding: `${studentTheme.spacing.sm} ${studentTheme.spacing.lg}`
+              })}
+            >
+              ← Back to Subjects
+            </button>
+            
+            <div style={getCardStyle({ marginBottom: studentTheme.spacing.lg })}>
+              <h3 style={{ 
+                color: studentTheme.colors.textPrimary, 
+                marginBottom: studentTheme.spacing.sm,
+                fontSize: studentTheme.typography.fontSize.xl,
+                fontWeight: studentTheme.typography.fontWeight.semibold
+              }}>📚 {selectedSubject.name}</h3>
+              {teacher && (
+                <div style={{ 
+                  color: studentTheme.colors.textSecondary, 
+                  marginBottom: studentTheme.spacing.md,
+                  fontSize: studentTheme.typography.fontSize.base
+                }}>
+                  👨‍🏫 Teacher: <strong style={{ color: studentTheme.colors.textPrimary }}>{teacher.name}</strong>
+                </div>
+              )}
+            </div>
+            
+            {loading ? (
+              <div style={getCardStyle({
+                textAlign: 'center',
+                color: studentTheme.colors.textSecondary,
+                fontSize: studentTheme.typography.fontSize.lg,
+                padding: studentTheme.spacing.xl
+              })}>
+                ⏳ Loading attendance sessions...
+              </div>
+            ) : (
+              <div style={getCardStyle()}>
+                <table style={studentTheme.components.table}>
+                  <thead>
+                    <tr style={{ background: studentTheme.colors.surfaceHover }}>
+                      <th style={{ 
+                        padding: studentTheme.spacing.md, 
+                        borderBottom: `2px solid ${studentTheme.colors.borderLight}`,
+                        textAlign: 'left',
+                        fontWeight: studentTheme.typography.fontWeight.semibold,
+                        color: studentTheme.colors.textPrimary
+                      }}>📅 Date</th>
+                      <th style={{ 
+                        padding: studentTheme.spacing.md, 
+                        borderBottom: `2px solid ${studentTheme.colors.borderLight}`,
+                        textAlign: 'left',
+                        fontWeight: studentTheme.typography.fontWeight.semibold,
+                        color: studentTheme.colors.textPrimary
+                      }}>⏰ Time</th>
+                      <th style={{ 
+                        padding: studentTheme.spacing.md, 
+                        borderBottom: `2px solid ${studentTheme.colors.borderLight}`,
+                        textAlign: 'left',
+                        fontWeight: studentTheme.typography.fontWeight.semibold,
+                        color: studentTheme.colors.textPrimary
+                      }}>📝 Topic</th>
+                      <th style={{ 
+                        padding: studentTheme.spacing.md, 
+                        borderBottom: `2px solid ${studentTheme.colors.borderLight}`,
+                        textAlign: 'left',
+                        fontWeight: studentTheme.typography.fontWeight.semibold,
+                        color: studentTheme.colors.textPrimary
+                      }}>✅ Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sessions.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} style={{ 
+                          padding: studentTheme.spacing.xl, 
+                          textAlign: 'center', 
+                          color: studentTheme.colors.textSecondary,
+                          fontSize: studentTheme.typography.fontSize.lg
+                        }}>
+                          📊 No attendance sessions found for this subject.
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      sessions.map(sess => (
+                        <tr key={sess._id} style={{ 
+                          borderBottom: `1px solid ${studentTheme.colors.borderLight}`,
+                          transition: 'background-color 0.2s ease'
+                        }}>
+                          <td style={{ 
+                            padding: studentTheme.spacing.md,
+                            color: studentTheme.colors.textPrimary,
+                            fontWeight: studentTheme.typography.fontWeight.medium
+                          }}>
+                            {new Date(sess.date).toLocaleDateString()}
+                          </td>
+                          <td style={{ 
+                            padding: studentTheme.spacing.md,
+                            color: studentTheme.colors.textSecondary
+                          }}>
+                            {sess.startTime} - {sess.endTime}
+                          </td>
+                          <td style={{ 
+                            padding: studentTheme.spacing.md,
+                            color: studentTheme.colors.textSecondary
+                          }}>
+                            {sess.topic}
+                          </td>
+                          <td style={{ padding: studentTheme.spacing.md }}>
+                            {sess.attendance && sess.attendance.present ? (
+                              <span style={getBadgeStyle('present')}>✅ Present</span>
+                            ) : (
+                              <span style={getBadgeStyle('absent')}>❌ Absent</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         )}
